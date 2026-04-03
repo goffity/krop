@@ -8,6 +8,7 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useCategories } from '@/hooks/useCategories';
 import { useCategoryBreakdown } from '@/hooks/useCategoryBreakdown';
 import { useMonthlyComparison } from '@/hooks/useMonthlyComparison';
+import { useSpendingInsights } from '@/hooks/useSpendingInsights';
 import { TransactionCard } from '@/components/TransactionCard';
 import { DonutChart } from '@/components/DonutChart';
 import { BarChart } from '@/components/BarChart';
@@ -40,6 +41,7 @@ export default function DashboardScreen() {
   const { categories } = useCategories();
   const categoryBreakdown = useCategoryBreakdown(transactions, categories);
   const { data: monthlyData } = useMonthlyComparison(selectedMonth);
+  const { data: insights } = useSpendingInsights(selectedMonth);
 
   const recentTransactions = transactions.slice(0, 5);
   const totalExpense = summary?.expense ?? 0;
@@ -108,6 +110,19 @@ export default function DashboardScreen() {
         {monthlyData && monthlyData.length > 0 && (
           <View style={{ marginTop: 16 }}>
             <BarChart data={monthlyData} />
+          </View>
+        )}
+
+        {/* Spending Insights */}
+        {insights && insights.length > 0 && (
+          <View style={styles.insightsContainer}>
+            <Text style={styles.sectionTitle}>วิเคราะห์การใช้เงิน</Text>
+            {insights.map((insight, i) => (
+              <View key={i} style={styles.insightItem}>
+                <Text style={styles.insightIcon}>{insight.icon}</Text>
+                <Text style={styles.insightText}>{insight.message}</Text>
+              </View>
+            ))}
           </View>
         )}
 
@@ -214,4 +229,19 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   fabText: { color: '#fff', fontSize: 28, fontWeight: '300' },
+  insightsContainer: {
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 16,
+    gap: 10,
+  },
+  insightItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 4,
+  },
+  insightIcon: { fontSize: 18 },
+  insightText: { fontSize: 13, color: colors.textSecondary, flex: 1 },
 });
