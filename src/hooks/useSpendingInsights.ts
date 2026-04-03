@@ -31,20 +31,26 @@ export function useSpendingInsights(currentMonth: string) {
       const current = getMonthRange(currentMonth);
       const previous = getMonthRange(prevMonth);
 
-      const [{ data: currentData }, { data: previousData }] = await Promise.all([
+      const [currentResult, previousResult] = await Promise.all([
         supabase
           .from('transactions')
-          .select('*')
+          .select('type, amount, category, date')
           .eq('user_id', user.id)
           .gte('date', current.start)
           .lte('date', current.end),
         supabase
           .from('transactions')
-          .select('*')
+          .select('type, amount, category, date')
           .eq('user_id', user.id)
           .gte('date', previous.start)
           .lte('date', previous.end),
       ]);
+
+      if (currentResult.error) throw currentResult.error;
+      if (previousResult.error) throw previousResult.error;
+
+      const currentData = currentResult.data;
+      const previousData = previousResult.data;
 
       return analyzeSpending(
         (currentData ?? []) as Transaction[],

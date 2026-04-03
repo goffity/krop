@@ -21,21 +21,39 @@ export async function exportTransactionsCsv(
   });
 
   const csv = '\uFEFF' + [header, ...rows].join('\n'); // BOM for Thai encoding
+  const filename = `krop-export-${new Date().toISOString().split('T')[0]}.csv`;
 
   if (Platform.OS === 'web') {
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `krop-export-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
     return;
   }
 
-  // Native: use Share API with the CSV content
-  await Share.share({
-    message: csv,
-    title: `krop-export-${new Date().toISOString().split('T')[0]}.csv`,
-  });
+  // Native: write to temp file and share as file
+  try {
+    const { File, Paths } = await import('expo-file-system');
+    const Sharing = await import('expo-sharing');
+
+    const file = new File(Paths.cache, filename);
+    await file.write(csv);
+
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(file.uri, {
+        mimeType: 'text/csv',
+        UTI: 'public.comma-separated-values-text',
+        dialogTitle: 'Export รายการ Krop',
+      });
+    }
+  } catch {
+    // Fallback: share as text if file system unavailable
+    await Share.share({
+      message: csv,
+      title: filename,
+    });
+  }
 }
