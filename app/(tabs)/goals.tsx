@@ -13,7 +13,7 @@ const GOAL_ICONS = ['🎯', '📱', '✈️', '🏦', '🏠', '🚗', '💍', '�
 const GOAL_COLORS = ['#6c5ce7', '#0984e3', '#00b894', '#fdcb6e', '#e17055', '#fd79a8', '#a29bfe'];
 
 export default function GoalsScreen() {
-  const { goals, isLoading, create, addSavings, remove, isCreating, isAdding } = useSavingsGoals();
+  const { goals, isLoading, refetch, create, addSavings, remove, isCreating, isAdding } = useSavingsGoals();
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
   const [target, setTarget] = useState('');
@@ -47,7 +47,7 @@ export default function GoalsScreen() {
       <ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={isLoading} tintColor={colors.primary} />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor={colors.primary} />}
       >
         <View style={styles.header}>
           <Text style={styles.title}>เป้าหมายการออม</Text>
@@ -96,7 +96,11 @@ export default function GoalsScreen() {
             <TextInput
               style={styles.input}
               value={target}
-              onChangeText={(t) => setTarget(t.replace(/[^0-9.]/g, ''))}
+              onChangeText={(t) => {
+                const cleaned = t.replace(/[^0-9.]/g, '');
+                if (cleaned.split('.').length > 2) return;
+                setTarget(cleaned);
+              }}
               keyboardType="numeric"
               inputMode="decimal"
               placeholder="เช่น 50000"

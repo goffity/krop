@@ -52,8 +52,13 @@ export function SavingsGoalCard({ goal, onAddSavings, onDelete, isAdding }: Prop
   };
 
   const handleDelete = () => {
-    showConfirm('ลบเป้าหมาย', `ต้องการลบ "${goal.name}" หรือไม่?`, () => {
-      onDelete(goal.id);
+    showConfirm('ลบเป้าหมาย', `ต้องการลบ "${goal.name}" หรือไม่?`, async () => {
+      try {
+        await onDelete(goal.id);
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : 'เกิดข้อผิดพลาด';
+        showAlert('ลบไม่สำเร็จ', msg);
+      }
     });
   };
 

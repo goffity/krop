@@ -41,7 +41,11 @@ export default function AddTransactionScreen() {
 
   // Auto-suggest category from note
   useEffect(() => {
-    if (!note || selectedCategory) return;
+    if (!note) {
+      setSuggestion(null);
+      return;
+    }
+    if (selectedCategory) return;
     const suggested = suggestCategory(note);
     setSuggestion(suggested);
   }, [note, selectedCategory]);

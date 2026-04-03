@@ -52,20 +52,31 @@ export function useSavingsGoals() {
 
   const addSavingsMutation = useMutation({
     mutationFn: async ({ id, amount }: AddSavingsInput) => {
-      // Get current value first
-      const { data: current, error: fetchError } = await supabase
-        .from('savings_goals')
-        .select('current')
-        .eq('id', id)
-        .single();
-      if (fetchError) throw fetchError;
-
-      const newAmount = Number(current.current) + amount;
+      // Atomic increment using rpc to avoid race conditions
+      const { error: rpcError } = await supabase.rpc('increment_savings', {
+        goal_id: id,
+        add_amount: amount,
+      });
+      if (rpcError) {
+        // Fallback: direct update if rpc not available
+        const { data: current, error: fetchError } = await supabase
+          .from('savings_goals')
+          .select('current')
+          .eq('id', id)
+          .single();
+        if (fetchError) throw fetchError;
+        const newAmount = Number(current.current) + amount;
+        const { error: updateError } = await supabase
+          .from('savings_goals')
+          .update({ current: newAmount })
+          .eq('id', id);
+        if (updateError) throw updateError;
+      }
+      // Return updated goal
       const { data, error } = await supabase
         .from('savings_goals')
-        .update({ current: newAmount })
+        .select('*')
         .eq('id', id)
-        .select()
         .single();
       if (error) throw error;
       return data as SavingsGoal;
@@ -88,6 +99,7 @@ export function useSavingsGoals() {
   return {
     goals: listQuery.data ?? [],
     isLoading: listQuery.isLoading,
+    refetch: listQuery.refetch,
     create: createMutation.mutateAsync,
     addSavings: addSavingsMutation.mutateAsync,
     remove: deleteMutation.mutateAsync,
