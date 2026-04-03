@@ -13,13 +13,13 @@ export function BudgetProgressBar({ category, icon, budgetAmount, spentAmount }:
   const remaining = budgetAmount - spentAmount;
 
   const barColor =
-    pct >= 90 ? colors.expense :
-    pct >= 70 ? colors.warning :
+    pct > 90 ? colors.expense :
+    pct > 70 ? colors.warning :
     colors.income;
 
   const pctColor =
-    pct >= 90 ? colors.expense :
-    pct >= 70 ? colors.warning :
+    pct > 90 ? colors.expense :
+    pct > 70 ? colors.warning :
     colors.income;
 
   return (
@@ -47,14 +47,14 @@ export function BudgetProgressBar({ category, icon, budgetAmount, spentAmount }:
         {Math.round(pct)}% ใช้ไปแล้ว
       </Text>
 
-      {pct >= 90 && (
+      {pct > 90 && (
         <View style={styles.warning}>
           <Text style={styles.warningText}>
             ⚠️ ใช้เกิน 90% ของงบแล้ว! เหลืออีก ฿{Math.max(remaining, 0).toLocaleString()}
           </Text>
         </View>
       )}
-      {pct >= 70 && pct < 90 && (
+      {pct > 70 && pct <= 90 && (
         <View style={[styles.warning, styles.warningYellow]}>
           <Text style={[styles.warningText, { color: colors.warning }]}>
             ⚠️ ใช้เกิน 70% ของงบแล้ว เหลืออีก ฿{Math.max(remaining, 0).toLocaleString()}

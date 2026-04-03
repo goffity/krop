@@ -32,17 +32,12 @@ export function useBudgets(month: string) {
   const upsertMutation = useMutation({
     mutationFn: async (input: CreateBudgetInput) => {
       if (!user) throw new Error('Not authenticated');
-      // Delete existing budget for this category+month if any
-      await supabase
-        .from('budgets')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('category', input.category)
-        .eq('month', input.month);
-      // Insert new
       const { data, error } = await supabase
         .from('budgets')
-        .insert({ ...input, user_id: user.id })
+        .upsert(
+          { ...input, user_id: user.id },
+          { onConflict: 'user_id,category,month' }
+        )
         .select()
         .single();
       if (error) throw error;

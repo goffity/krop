@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/lib/theme';
-import { showAlert } from '@/lib/alert';
+import { showAlert, showConfirm } from '@/lib/alert';
 import { useFinanceStore } from '@/store/useFinanceStore';
 import { useBudgets } from '@/hooks/useBudgets';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -51,16 +51,18 @@ export default function BudgetScreen() {
     }
   };
 
-  // Categories that don't have a budget yet
+  // When editing, show selected category; when adding new, show only unbudgeted ones
   const budgetedKeys = new Set(budgets.map((b) => b.category));
-  const availableCategories = categories.filter((c) => !budgetedKeys.has(c.key));
+  const availableCategories = selectedCategory
+    ? categories
+    : categories.filter((c) => !budgetedKeys.has(c.key));
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={isLoading} tintColor={colors.primary} />}
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={() => { /* refetch handled by React Query */ }} tintColor={colors.primary} />}
       >
         {/* Header Card */}
         <View style={styles.headerCard}>
@@ -88,13 +90,26 @@ export default function BudgetScreen() {
           budgets.map((budget) => {
             const cat = categories.find((c) => c.key === budget.category);
             return (
-              <BudgetProgressBar
+              <TouchableOpacity
                 key={budget.id}
-                category={cat?.label ?? budget.category}
-                icon={cat?.icon ?? '📂'}
-                budgetAmount={Number(budget.amount)}
-                spentAmount={spentByCategory.get(budget.category) ?? 0}
-              />
+                onPress={() => {
+                  setSelectedCategory(budget.category);
+                  setBudgetAmount(String(budget.amount));
+                  setShowModal(true);
+                }}
+                onLongPress={() => {
+                  showConfirm('ลบงบประมาณ', `ลบงบ "${cat?.label ?? budget.category}" หรือไม่?`, () => {
+                    remove(budget.id);
+                  });
+                }}
+              >
+                <BudgetProgressBar
+                  category={cat?.label ?? budget.category}
+                  icon={cat?.icon ?? '📂'}
+                  budgetAmount={Number(budget.amount)}
+                  spentAmount={spentByCategory.get(budget.category) ?? 0}
+                />
+              </TouchableOpacity>
             );
           })
         )}
