@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { colors } from '@/lib/theme';
 import { showAlert } from '@/lib/alert';
+import { suggestCategory } from '@/lib/categorizer';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useCategories } from '@/hooks/useCategories';
 import type { TransactionType } from '@/types';
@@ -36,6 +37,25 @@ export default function AddTransactionScreen() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [note, setNote] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [suggestion, setSuggestion] = useState<string | null>(null);
+
+  // Auto-suggest category from note
+  useEffect(() => {
+    if (!note) {
+      setSuggestion(null);
+      return;
+    }
+    if (selectedCategory) return;
+    const suggested = suggestCategory(note);
+    setSuggestion(suggested);
+  }, [note, selectedCategory]);
+
+  const applySuggestion = () => {
+    if (suggestion) {
+      setSelectedCategory(suggestion);
+      setSuggestion(null);
+    }
+  };
 
   const handleSave = async () => {
     if (!amount || Number(amount) <= 0) {
@@ -160,6 +180,15 @@ export default function AddTransactionScreen() {
             />
           </View>
 
+          {/* Auto-categorization suggestion */}
+          {suggestion && !selectedCategory && (
+            <TouchableOpacity style={styles.suggestion} onPress={applySuggestion}>
+              <Text style={styles.suggestionText}>
+                💡 แนะนำหมวด "{categories.find((c) => c.key === suggestion)?.label ?? suggestion}" จากโน้ต
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {/* Save Button */}
           <TouchableOpacity
             style={[styles.saveBtn, isCreating && styles.saveBtnDisabled]}
@@ -250,4 +279,11 @@ const styles = StyleSheet.create({
   saveBtnDisabled: { opacity: 0.6 },
   saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   loadingText: { color: colors.textMuted, fontSize: 13, paddingVertical: 8 },
+  suggestion: {
+    backgroundColor: 'rgba(108,92,231,0.1)',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 8,
+  },
+  suggestionText: { fontSize: 12, color: colors.primaryLight },
 });
