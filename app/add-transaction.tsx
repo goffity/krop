@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { colors } from '@/lib/theme';
 import { showAlert } from '@/lib/alert';
 import { suggestCategory } from '@/lib/categorizer';
+import { formatInputNumber, parseInputNumber } from '@/lib/format';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useCategories } from '@/hooks/useCategories';
 import type { TransactionType } from '@/types';
@@ -123,8 +124,8 @@ export default function AddTransactionScreen() {
             <Text style={styles.currency}>฿</Text>
             <TextInput
               style={[styles.amountInput, type === 'expense' ? styles.amountExpense : styles.amountIncome]}
-              value={amount}
-              onChangeText={handleAmountChange}
+              value={formatInputNumber(amount)}
+              onChangeText={(t) => handleAmountChange(parseInputNumber(t))}
               keyboardType="numeric"
               inputMode="decimal"
               placeholder="0"

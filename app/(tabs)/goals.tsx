@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, Modal, RefreshControl,
+  TextInput, Modal, RefreshControl, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/lib/theme';
 import { showAlert } from '@/lib/alert';
+import { formatInputNumber, parseInputNumber } from '@/lib/format';
 import { useSavingsGoals } from '@/hooks/useSavingsGoals';
 import { SavingsGoalCard } from '@/components/SavingsGoalCard';
 
@@ -79,8 +80,15 @@ export default function GoalsScreen() {
 
       {/* Create Goal Modal */}
       <Modal visible={showModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
+          <ScrollView
+            contentContainerStyle={styles.modalContent}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+          >
             <Text style={styles.modalTitle}>สร้างเป้าหมายใหม่</Text>
 
             <Text style={styles.label}>ชื่อเป้าหมาย</Text>
@@ -95,15 +103,15 @@ export default function GoalsScreen() {
             <Text style={styles.label}>จำนวนเป้าหมาย (฿)</Text>
             <TextInput
               style={styles.input}
-              value={target}
+              value={formatInputNumber(target)}
               onChangeText={(t) => {
-                const cleaned = t.replace(/[^0-9.]/g, '');
-                if (cleaned.split('.').length > 2) return;
-                setTarget(cleaned);
+                const raw = parseInputNumber(t).replace(/[^0-9.]/g, '');
+                if (raw.split('.').length > 2) return;
+                setTarget(raw);
               }}
               keyboardType="numeric"
               inputMode="decimal"
-              placeholder="เช่น 50000"
+              placeholder="เช่น 50,000"
               placeholderTextColor={colors.textMuted}
             />
 
@@ -148,8 +156,8 @@ export default function GoalsScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

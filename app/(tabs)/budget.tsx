@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  TextInput, Modal, RefreshControl,
+  TextInput, Modal, RefreshControl, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '@/lib/theme';
 import { showAlert, showConfirm } from '@/lib/alert';
+import { formatInputNumber, parseInputNumber } from '@/lib/format';
 import { useFinanceStore } from '@/store/useFinanceStore';
 import { useBudgets } from '@/hooks/useBudgets';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -119,8 +120,15 @@ export default function BudgetScreen() {
 
       {/* Add Budget Modal */}
       <Modal visible={showModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
+          <ScrollView
+            contentContainerStyle={styles.modalContent}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+          >
             <Text style={styles.modalTitle}>ตั้งงบประมาณ</Text>
 
             <Text style={styles.label}>หมวดหมู่</Text>
@@ -142,11 +150,11 @@ export default function BudgetScreen() {
             <Text style={styles.label}>จำนวนงบ (฿)</Text>
             <TextInput
               style={styles.input}
-              value={budgetAmount}
-              onChangeText={(t) => setBudgetAmount(t.replace(/[^0-9.]/g, ''))}
+              value={formatInputNumber(budgetAmount)}
+              onChangeText={(t) => setBudgetAmount(parseInputNumber(t).replace(/[^0-9.]/g, ''))}
               keyboardType="numeric"
               inputMode="decimal"
-              placeholder="เช่น 10000"
+              placeholder="เช่น 10,000"
               placeholderTextColor={colors.textMuted}
             />
 
@@ -167,8 +175,8 @@ export default function BudgetScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
