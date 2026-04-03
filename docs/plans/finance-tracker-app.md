@@ -40,26 +40,26 @@ Tech Stack: React Native + Expo + Supabase + TypeScript
 
 | ID | Title | Type | Priority | Effort | Deps | Issue |
 |----|-------|------|----------|--------|------|-------|
-| T1 | Finance Tracker App — Full Implementation | feature | high | XL | - | - |
-| T1.1 | Setup Expo project + pnpm + dependencies ทั้งหมด | chore | high | M | - | - |
-| T1.2 | สร้าง Supabase project + schema + RLS policies | chore | high | M | - | - |
-| T1.3 | ตั้งค่า Navigation (Bottom Tabs + Stack) | feature | high | M | T1.1 | - |
-| T1.4 | Authentication — Email + Google + Apple Sign-In | feature | high | L | T1.1, T1.2 | - |
-| T1.5 | TypeScript types + Supabase client init | chore | high | S | T1.1, T1.2 | - |
-| T1.6 | Transaction CRUD (create, read, update, delete) | feature | high | L | T1.4, T1.5 | - |
-| T1.7 | MMKV offline cache + sync queue | feature | high | L | T1.5, T1.6 | - |
-| T1.8 | Dashboard screen + Monthly summary | feature | high | L | T1.6 | - |
-| T1.9 | Donut Chart — สัดส่วนรายจ่ายแต่ละหมวด | feature | high | M | T1.8 | - |
-| T1.10 | Bar Chart — เปรียบเทียบรายรับ-รายจ่าย 6 เดือน | feature | medium | M | T1.8 | - |
-| T1.11 | Budget system — ตั้งงบ + Progress bar + แจ้งเตือน | feature | high | L | T1.6 | - |
-| T1.12 | Savings Goals screen — ตั้งเป้า + ติดตามความคืบหน้า | feature | medium | L | T1.6 | - |
-| T1.13 | History screen — กรองตามหมวด/เดือน | feature | medium | M | T1.6 | - |
-| T1.14 | Auto-categorization logic | feature | medium | M | T1.6 | - |
-| T1.15 | Export CSV | feature | medium | M | T1.6 | - |
-| T1.16 | Push notifications + Over-budget alerts | feature | medium | L | T1.11 | - |
-| T1.17 | Spending behavior analysis | feature | low | L | T1.8, T1.13 | - |
-| T1.18 | UI polish + animations + App Store prep | chore | medium | XL | T1.1~T1.17 | - |
-| T1.19 | Unit + Integration tests ทุก feature | test | high | XL | T1.1~T1.18 | - |
+| T1 | Finance Tracker App — Full Implementation | feature | high | XL | - | #1 |
+| T1.1 | Setup Expo project + pnpm + dependencies ทั้งหมด | chore | high | M | - | #2 |
+| T1.2 | สร้าง Supabase project + schema + RLS policies | chore | high | M | - | #3 |
+| T1.3 | ตั้งค่า Navigation (Bottom Tabs + Stack) | feature | high | M | T1.1 | #4 |
+| T1.4 | Authentication — Email + Google + Apple Sign-In | feature | high | L | T1.1, T1.2 | #5 |
+| T1.5 | TypeScript types + Supabase client init | chore | high | S | T1.1, T1.2 | #6 |
+| T1.6 | Transaction CRUD (create, read, update, delete) | feature | high | L | T1.4, T1.5 | #7 |
+| T1.7 | MMKV offline cache + sync queue | feature | high | L | T1.5, T1.6 | #8 |
+| T1.8 | Dashboard screen + Monthly summary | feature | high | L | T1.6 | #9 |
+| T1.9 | Donut Chart — สัดส่วนรายจ่ายแต่ละหมวด | feature | high | M | T1.8 | #10 |
+| T1.10 | Bar Chart — เปรียบเทียบรายรับ-รายจ่าย 6 เดือน | feature | medium | M | T1.8 | #11 |
+| T1.11 | Budget system — ตั้งงบ + Progress bar + แจ้งเตือน | feature | high | L | T1.6 | #12 |
+| T1.12 | Savings Goals screen — ตั้งเป้า + ติดตามความคืบหน้า | feature | medium | L | T1.6 | #13 |
+| T1.13 | History screen — กรองตามหมวด/เดือน | feature | medium | M | T1.6 | #14 |
+| T1.14 | Auto-categorization logic | feature | medium | M | T1.6 | #15 |
+| T1.15 | Export CSV | feature | medium | M | T1.6 | #16 |
+| T1.16 | Push notifications + Over-budget alerts | feature | medium | L | T1.11 | #17 |
+| T1.17 | Spending behavior analysis | feature | low | L | T1.8, T1.13 | #18 |
+| T1.18 | UI polish + animations + App Store prep | chore | medium | XL | T1.1~T1.17 | #19 |
+| T1.19 | Unit + Integration tests ทุก feature | test | high | XL | T1.1~T1.18 | #20 |
 
 ---
 
