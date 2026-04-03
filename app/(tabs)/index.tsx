@@ -6,7 +6,11 @@ import { useFinanceStore } from '@/store/useFinanceStore';
 import { useMonthSummary } from '@/hooks/useMonthSummary';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useCategories } from '@/hooks/useCategories';
+import { useCategoryBreakdown } from '@/hooks/useCategoryBreakdown';
+import { useMonthlyComparison } from '@/hooks/useMonthlyComparison';
 import { TransactionCard } from '@/components/TransactionCard';
+import { DonutChart } from '@/components/DonutChart';
+import { BarChart } from '@/components/BarChart';
 
 const MONTH_NAMES = [
   'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
@@ -34,8 +38,11 @@ export default function DashboardScreen() {
   const { data: summary } = useMonthSummary(selectedMonth);
   const { transactions, isLoading, refetch, remove } = useTransactions(selectedMonth);
   const { categories } = useCategories();
+  const categoryBreakdown = useCategoryBreakdown(transactions, categories);
+  const { data: monthlyData } = useMonthlyComparison(selectedMonth);
 
   const recentTransactions = transactions.slice(0, 5);
+  const totalExpense = summary?.expense ?? 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -86,6 +93,23 @@ export default function DashboardScreen() {
             </Text>
           </View>
         </View>
+
+        {/* Donut Chart */}
+        {categoryBreakdown.length > 0 && (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>สัดส่วนรายจ่าย</Text>
+            </View>
+            <DonutChart data={categoryBreakdown} total={totalExpense} />
+          </>
+        )}
+
+        {/* Bar Chart */}
+        {monthlyData && monthlyData.length > 0 && (
+          <View style={{ marginTop: 16 }}>
+            <BarChart data={monthlyData} />
+          </View>
+        )}
 
         {/* Recent Transactions */}
         <View style={styles.sectionHeader}>
